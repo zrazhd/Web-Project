@@ -1,0 +1,46 @@
+<div class="card" [class.liked]="liked_sent">
+  <div class="card-photo">
+    <img
+      [src]="user.photoUrl || 'https://ui-avatars.com/api/?name=' + user.name + '&size=300&background=fce7f3&color=e91e8c'"
+      [alt]="user.name"
+      (error)="$any($event.target).src='https://ui-avatars.com/api/?name=' + user.name + '&size=300&background=fce7f3&color=e91e8c'"
+    >
+    <div class="card-badge">{{ user.age }}</div>
+  </div>
+
+  <div class="card-body">
+    <div class="card-info">
+      <h3 class="card-name">{{ user.name }}</h3>
+      @if (user.city) {
+        <span class="card-city">📍 {{ user.city }}</span>
+      }
+    </div>
+
+    @if (user.bio) {
+      <p class="card-bio">{{ user.bio }}</p>
+    }
+
+    @if (user.interests?.length) {
+      <div class="card-tags">
+        @for (tag of user.interests!.slice(0, 3); track tag) {
+          <span class="tag">{{ tag }}</span>
+        }
+      </div>
+    }
+
+    @if (error) {
+      <p class="card-error">{{ error }}</p>
+    }
+
+    <button
+      class="like-btn"
+      (click)="sendLike()"
+      [disabled]="liked_sent || loading"
+      [class.sent]="liked_sent"
+    >
+      @if (loading) { <span>⏳</span> }
+      @else if (liked_sent) { <span>💖 Like sent!</span> }
+      @else { <span>❤️ Send Like</span> }
+    </button>
+  </div>
+</div>
