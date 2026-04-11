@@ -1,0 +1,69 @@
+<div class="page">
+  <div class="page-hero">
+    <h1>Likes 💌</h1>
+    <p>Incoming requests from people who liked you</p>
+    @if (!loading && pendingCount > 0) {
+      <div class="badge">{{ pendingCount }} new</div>
+    }
+  </div>
+
+  @if (error) {
+    <div class="error-msg page-error">
+      ⚠️ {{ error }}
+      <button (click)="loadRequests()" class="retry-btn">Retry</button>
+    </div>
+  }
+
+  @if (loading) {
+    <div class="loading-wrap">
+      <div class="spinner"></div>
+      <p>Loading requests...</p>
+    </div>
+  }
+
+  @if (!loading && requests.length === 0 && !error) {
+    <div class="empty-state">
+      <div class="empty-icon">💌</div>
+      <h3>No requests yet</h3>
+      <p>When someone sends you a like — it will appear here</p>
+    </div>
+  }
+
+  @if (!loading && requests.length > 0) {
+    <div class="requests-list">
+      @for (req of requests; track req.id) {
+        <div class="request-card" [class]="req.status">
+          <div class="req-avatar">
+            <img
+              [src]="req.fromUser.photoUrl || 'https://ui-avatars.com/api/?name=' + req.fromUser.name + '&background=fce7f3&color=e91e8c'"
+              [alt]="req.fromUser.name"
+              (error)="$any($event.target).src='https://ui-avatars.com/api/?name=' + req.fromUser.name + '&background=fce7f3&color=e91e8c'"
+            >
+          </div>
+
+          <div class="req-info">
+            <div class="req-name">{{ req.fromUser.name }}</div>
+            <div class="req-meta">
+              {{ req.fromUser.age }} years old
+              @if (req.fromUser.city) { · {{ req.fromUser.city }} }
+            </div>
+            @if (req.fromUser.bio) {
+              <p class="req-bio">{{ req.fromUser.bio }}</p>
+            }
+          </div>
+
+          <div class="req-actions">
+            @if (req.status === 'pending') {
+              <button class="accept-btn" (click)="accept(req)">✓ Accept</button>
+              <button class="reject-btn" (click)="reject(req)">✕ Decline</button>
+            } @else if (req.status === 'accepted') {
+              <span class="status-badge accepted">💚 Accepted</span>
+            } @else {
+              <span class="status-badge rejected">Declined</span>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
