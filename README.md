@@ -37,3 +37,4 @@ The best dating app with core functionality: registration, user profiles, browsi
 |--------------------------|----------------------------|
 | Denis Zrazhevskiy        | Backend / Frontend         |
 | Bagdaulet Kabylanbek     | Backend / Frontend         |
+| Ramazan Perdebay         | Backend / Frontend         |
