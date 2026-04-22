@@ -1,0 +1,62 @@
+<div class="page">
+  <div class="page-hero">
+    <h1>Your Matches 💞</h1>
+    <p>People you mutually liked</p>
+    @if (!loading && matches.length > 0) {
+      <div class="badge">{{ matches.length }} match{{ matches.length > 1 ? 'es' : '' }}</div>
+    }
+  </div>
+
+  @if (error) {
+    <div class="error-msg page-error">
+      ⚠️ {{ error }}
+      <button (click)="loadMatches()" class="retry-btn">Retry</button>
+    </div>
+  }
+
+  @if (loading) {
+    <div class="loading-wrap">
+      <div class="spinner"></div>
+      <p>Loading matches...</p>
+    </div>
+  }
+
+  @if (!loading && matches.length === 0 && !error) {
+    <div class="empty-state">
+      <div class="empty-icon">💞</div>
+      <h3>No matches yet</h3>
+      <p>Start liking people — when they like you back, it's a match!</p>
+      <a routerLink="/users" class="btn-primary" style="display:inline-block;margin-top:16px;">
+        Discover people
+      </a>
+    </div>
+  }
+
+  @if (!loading && matches.length > 0) {
+    <div class="matches-grid">
+      @for (match of matches; track match.id) {
+        <div class="match-card">
+          <div class="match-photos">
+            <img
+              class="photo-left"
+              [src]="match.user1.photoUrl || 'https://ui-avatars.com/api/?name=' + match.user1.name + '&background=fce7f3&color=e91e8c'"
+              [alt]="match.user1.name"
+              (error)="$any($event.target).src='https://ui-avatars.com/api/?name=' + match.user1.name + '&background=fce7f3&color=e91e8c'"
+            >
+            <div class="heart-badge">💕</div>
+            <img
+              class="photo-right"
+              [src]="match.user2.photoUrl || 'https://ui-avatars.com/api/?name=' + match.user2.name + '&background=fce7f3&color=e91e8c'"
+              [alt]="match.user2.name"
+              (error)="$any($event.target).src='https://ui-avatars.com/api/?name=' + match.user2.name + '&background=fce7f3&color=e91e8c'"
+            >
+          </div>
+          <div class="match-info">
+            <div class="match-names">{{ match.user1.name }} & {{ match.user2.name }}</div>
+            <div class="match-date">Matched {{ match.created_at | slice:0:10 }}</div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
