@@ -1,0 +1,68 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <h1 class="auth-title">💘 DateApp</h1>
+    <h2 class="auth-subtitle">Create account</h2>
+
+    <form (ngSubmit)="submit()" #form="ngForm">
+      <div class="field">
+        <label for="name">Name</label>
+        <input
+          id="name"
+          type="text"
+          [(ngModel)]="name"
+          name="name"
+          required
+          placeholder="Your name"
+        />
+      </div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          [(ngModel)]="email"
+          name="email"
+          required
+          placeholder="you@example.com"
+        />
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          [(ngModel)]="password"
+          name="password"
+          required
+          minlength="6"
+          placeholder="At least 6 characters"
+        />
+      </div>
+
+      <div class="field">
+        <label for="age">Age <span class="optional">(optional)</span></label>
+        <input
+          id="age"
+          type="number"
+          [(ngModel)]="age"
+          name="age"
+          min="18"
+          max="99"
+          placeholder="18"
+        />
+      </div>
+
+      @if (error) {
+        <p class="auth-error">{{ error }}</p>
+      }
+
+      <button type="submit" class="auth-btn" [disabled]="loading">
+        {{ loading ? 'Creating account…' : 'Register' }}
+      </button>
+    </form>
+
+    <p class="auth-link">Already have an account? <a routerLink="/login">Sign in</a></p>
+  </div>
+</div>
