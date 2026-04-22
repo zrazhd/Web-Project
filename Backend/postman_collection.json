@@ -1,0 +1,84 @@
+{
+  "info": {
+    "name": "DateApp — Dev3 (Likes & Matches)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8080/api" },
+    { "key": "token",    "value": "YOUR_JWT_TOKEN_HERE" }
+  ],
+  "item": [
+    {
+      "name": "Send Like",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type",  "value": "application/json" }
+        ],
+        "url": { "raw": "{{base_url}}/like/2/", "host": ["{{base_url}}"], "path": ["like","2",""] }
+      },
+      "response": [
+        {
+          "name": "Like created (no match)",
+          "status": "Created", "code": 201,
+          "body": "{\n  \"id\": 1,\n  \"from_user\": 1,\n  \"to_user\": 2,\n  \"is_match\": false\n}"
+        },
+        {
+          "name": "Mutual match created",
+          "status": "Created", "code": 201,
+          "body": "{\n  \"id\": 3,\n  \"from_user\": 1,\n  \"to_user\": 2,\n  \"is_match\": true\n}"
+        },
+        {
+          "name": "Already liked",
+          "status": "Bad Request", "code": 400,
+          "body": "{\n  \"error\": \"Already liked this user.\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Remove Like (Dislike)",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": { "raw": "{{base_url}}/like/2/", "host": ["{{base_url}}"], "path": ["like","2",""] }
+      },
+      "response": [
+        {
+          "name": "Like removed",
+          "status": "No Content", "code": 204,
+          "body": ""
+        },
+        {
+          "name": "Like not found",
+          "status": "Not Found", "code": 404,
+          "body": "{\n  \"error\": \"Like not found.\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Get My Matches",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": { "raw": "{{base_url}}/matches/", "host": ["{{base_url}}"], "path": ["matches",""] }
+      },
+      "response": [
+        {
+          "name": "Matches list",
+          "status": "OK", "code": 200,
+          "body": "[\n  {\n    \"id\": 1,\n    \"user1\": 1,\n    \"user2\": 2,\n    \"created_at\": \"2025-04-22T10:30:00Z\",\n    \"matched_user\": {\n      \"id\": 2,\n      \"name\": \"Alice\",\n      \"age\": 23,\n      \"city\": \"Almaty\",\n      \"photoUrl\": \"https://example.com/photo.jpg\",\n      \"bio\": \"Love hiking and coffee\"\n    }\n  }\n]"
+        },
+        {
+          "name": "No matches",
+          "status": "OK", "code": 200,
+          "body": "[]"
+        }
+      ]
+    }
+  ]
+}

@@ -1,4 +1,12 @@
-<div class="card" [class.liked]="liked_sent">
+<div class="card" [class.liked]="liked" [class.disliked]="disliked">
+
+  <!-- Match animation banner -->
+  @if (isMatch) {
+    <div class="match-banner">
+      <span class="match-banner-text">💞 It's a Match!</span>
+    </div>
+  }
+
   <div class="card-photo">
     <img
       [src]="user.photoUrl || 'https://ui-avatars.com/api/?name=' + user.name + '&size=300&background=fce7f3&color=e91e8c'"
@@ -20,27 +28,28 @@
       <p class="card-bio">{{ user.bio }}</p>
     }
 
-    @if (user.interests?.length) {
-      <div class="card-tags">
-        @for (tag of user.interests!.slice(0, 3); track tag) {
-          <span class="tag">{{ tag }}</span>
-        }
+    @if (error) {
+      <p class="card-error">⚠️ {{ error }}</p>
+    }
+
+    <!-- Like / Dislike buttons -->
+    @if (!liked && !disliked) {
+      <div class="action-btns">
+        <button class="dislike-btn" (click)="sendDislike()" [disabled]="loading" title="Dislike">
+          ✕
+        </button>
+        <button class="like-btn" (click)="sendLike()" [disabled]="loading" title="Like">
+          @if (loading) { ⏳ } @else { ❤️ }
+        </button>
       </div>
     }
 
-    @if (error) {
-      <p class="card-error">{{ error }}</p>
+    @if (liked && !disliked) {
+      <div class="status-row liked-status">💖 Liked!</div>
     }
 
-    <button
-      class="like-btn"
-      (click)="sendLike()"
-      [disabled]="liked_sent || loading"
-      [class.sent]="liked_sent"
-    >
-      @if (loading) { <span>⏳</span> }
-      @else if (liked_sent) { <span>💖 Like sent!</span> }
-      @else { <span>❤️ Send Like</span> }
-    </button>
+    @if (disliked) {
+      <div class="status-row disliked-status">Passed</div>
+    }
   </div>
 </div>
