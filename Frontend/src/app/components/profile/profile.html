@@ -1,0 +1,161 @@
+<div class="profile-page">
+
+  <!-- Loading -->
+  @if (loading) {
+    <div class="state-box loading-box">
+      <div class="spinner"></div>
+      <p>Loading profile…</p>
+    </div>
+  }
+
+  <!-- Global error -->
+  @if (error && !loading) {
+    <div class="alert alert-error">{{ error }}</div>
+  }
+
+  <!-- Profile Not Found -->
+  @if (notFound && !loading && !isEditing) {
+    <div class="state-box not-found-box">
+      <div class="nf-icon">👤</div>
+      <h2>Profile not found</h2>
+      <p>You haven't created a profile yet.</p>
+      <button class="btn btn-primary" (click)="startEdit()">Create Profile</button>
+    </div>
+  }
+
+  <!-- View Mode -->
+  @if (profile && !isEditing && !loading) {
+    <div class="profile-card">
+      <!-- Photo -->
+      <div class="photo-wrapper">
+        @if (profile.photo_url) {
+          <img [src]="profile.photo_url" [alt]="profile.name" class="profile-photo" />
+        } @else {
+          <div class="photo-placeholder">
+            <span class="placeholder-icon">📷</span>
+            <span class="placeholder-text">No photo</span>
+          </div>
+        }
+      </div>
+
+      <!-- Info -->
+      <div class="profile-info">
+        <h1 class="profile-name">{{ profile.name }}</h1>
+        <p class="profile-email">{{ profile.email }}</p>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">📍 City</span>
+            <span class="info-value">{{ profile.city || '—' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">⚧ Gender</span>
+            <span class="info-value">{{ profile.gender_display || '—' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">🎂 Birthdate</span>
+            <span class="info-value">{{ profile.birthdate || '—' }}</span>
+          </div>
+        </div>
+
+        @if (profile.bio) {
+          <div class="bio-section">
+            <h3>About me</h3>
+            <p class="bio-text">{{ profile.bio }}</p>
+          </div>
+        }
+
+        @if (successMsg) {
+          <div class="alert alert-success">{{ successMsg }}</div>
+        }
+
+        <div class="action-row">
+          <button class="btn btn-primary" (click)="startEdit()">✏️ Edit Profile</button>
+          <button class="btn btn-danger" (click)="deleteProfile()" [disabled]="deleting">
+            {{ deleting ? 'Deleting…' : '🗑️ Delete' }}
+          </button>
+          <a routerLink="/feed" class="btn btn-outline">🔍 Browse</a>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Edit / Create Form -->
+  @if (isEditing && !loading) {
+    <div class="profile-card edit-card">
+      <h2 class="edit-title">{{ notFound ? 'Create Profile' : 'Edit Profile' }}</h2>
+
+      <!-- Photo preview -->
+      <div class="photo-wrapper">
+        @if (previewUrl) {
+          <img [src]="previewUrl" alt="Preview" class="profile-photo" />
+        } @else {
+          <div class="photo-placeholder">
+            <span class="placeholder-icon">📷</span>
+          </div>
+        }
+        <label class="photo-upload-btn" for="photo-input">
+          📷 {{ previewUrl ? 'Change photo' : 'Upload photo' }}
+        </label>
+        <input
+          id="photo-input"
+          type="file"
+          accept="image/*"
+          (change)="onFileChange($event)"
+          class="hidden-input"
+        />
+        @if (!previewUrl && !selectedFile) {
+          <p class="no-photo-hint">⚠️ No photo selected</p>
+        }
+      </div>
+
+      <!-- Form fields -->
+      <form (ngSubmit)="save()" class="edit-form">
+        <div class="field">
+          <label for="city">City</label>
+          <input id="city" type="text" [(ngModel)]="form.city" name="city" placeholder="Your city" />
+        </div>
+
+        <div class="field">
+          <label for="gender">Gender</label>
+          <select id="gender" [(ngModel)]="form.gender" name="gender">
+            <option value="">— Select —</option>
+            <option value="M">Male</option>
+            <option value="F">Female</option>
+            <option value="O">Other</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="birthdate">Birthdate</label>
+          <input id="birthdate" type="date" [(ngModel)]="form.birthdate" name="birthdate" />
+        </div>
+
+        <div class="field">
+          <label for="bio">About me</label>
+          <textarea
+            id="bio"
+            [(ngModel)]="form.bio"
+            name="bio"
+            rows="4"
+            placeholder="Tell something about yourself…"
+          ></textarea>
+        </div>
+
+        @if (error) {
+          <div class="alert alert-error">{{ error }}</div>
+        }
+
+        <div class="action-row">
+          <button type="submit" class="btn btn-primary" [disabled]="saving">
+            {{ saving ? 'Saving…' : '💾 Save' }}
+          </button>
+          @if (!notFound) {
+            <button type="button" class="btn btn-outline" (click)="cancelEdit()">Cancel</button>
+          }
+        </div>
+      </form>
+    </div>
+  }
+
+</div>

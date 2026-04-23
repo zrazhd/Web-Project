@@ -1,0 +1,58 @@
+<div class="chat-page">
+  <div class="chat-header glass-header">
+    <a routerLink="/matches" class="btn-back">
+      ← Back
+    </a>
+    <div class="header-info">
+      <h3>Chat</h3>
+    </div>
+  </div>
+
+  <div class="chat-history" #scrollMe>
+    @if (error) {
+      <div class="error-msg">⚠️ {{ error }}</div>
+    }
+
+    @if (loading) {
+      <div class="loading-wrap">
+        <div class="spinner"></div>
+        <p>Loading messages...</p>
+      </div>
+    }
+
+    @if (!loading && messages.length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">👋</div>
+        <p>Say hello to your match!</p>
+      </div>
+    }
+
+    <div class="messages-list">
+      @for (msg of messages; track msg.id) {
+        <div class="message-wrapper" [ngClass]="{'mine': isMine(msg), 'theirs': !isMine(msg)}">
+          <div class="message-bubble">
+            <span class="message-text">{{ msg.content }}</span>
+            <span class="message-time">{{ msg.timestamp | date:'shortTime' }}</span>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="chat-input-area glass-footer">
+    <form (ngSubmit)="sendMessage()" class="input-form">
+      <input 
+        type="text" 
+        [(ngModel)]="newMessage" 
+        name="newMessage"
+        placeholder="iMessage..." 
+        autocomplete="off"
+        class="chat-input"
+        [disabled]="sending"
+      />
+      <button type="submit" class="send-btn" [disabled]="!newMessage.trim() || sending">
+        Send
+      </button>
+    </form>
+  </div>
+</div>

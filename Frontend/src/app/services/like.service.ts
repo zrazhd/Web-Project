@@ -11,10 +11,11 @@ export interface LikeResponse {
 
 export interface Match {
   id: number;
-  user1: number;
-  user2: number;
+  user1: MatchedUser;
+  user2: MatchedUser;
   created_at: string;
   matched_user: MatchedUser;
+  unread_count?: number;
 }
 
 export interface MatchedUser {

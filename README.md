@@ -1,6 +1,6 @@
 # 💘 DateApp
 
-The greatest dating site project. Two developers, no unnecessary things.
+The greatest dating site project. Three developers, no unnecessary things.
 
 ---
 

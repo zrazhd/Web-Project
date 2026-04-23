@@ -1,31 +1,63 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { MatchService, Match } from '../../services/match.service';
+import { MatchService } from '../../services/match.service';
+import type { Match } from '../../services/match.service';
+import { SlicePipe } from '@angular/common';
+import { finalize } from 'rxjs/operators';
+import { interval, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-match-list',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, SlicePipe],
   templateUrl: './match-list.html',
   styleUrl: './match-list.css'
 })
-export class MatchListComponent implements OnInit {
+export class MatchListComponent implements OnInit, OnDestroy {
   matches: Match[] = [];
   loading = false;
-  error   = '';
+  error = '';
+  private pollSub?: Subscription;
 
-  constructor(private matchService: MatchService) {}
+  constructor(private matchService: MatchService, private cdr: ChangeDetectorRef) { }
 
-  ngOnInit() { this.loadMatches(); }
+  ngOnInit() { 
+    this.loadMatches(); 
+    this.startPolling();
+  }
+
+  ngOnDestroy() {
+    if (this.pollSub) {
+      this.pollSub.unsubscribe();
+    }
+  }
+
+  startPolling() {
+    // Poll matches every 3 seconds to get unread message count updates
+    this.pollSub = interval(3000).subscribe(() => {
+      this.fetchMatches(false); // background fetch
+    });
+  }
 
   loadMatches() {
-    this.loading = true;
-    this.error   = '';
-    this.matchService.getMatches().subscribe({
-      next: (data) => { this.matches = data; this.loading = false; },
+    this.fetchMatches(true);
+  }
+
+  fetchMatches(showSpinner: boolean) {
+    if (showSpinner) this.loading = true;
+    this.error = '';
+    this.matchService.getMatches().pipe(
+      finalize(() => {
+        if (showSpinner) this.loading = false;
+        this.cdr.detectChanges();
+      })
+    ).subscribe({
+      next: (data) => {
+        // Deep compare or force reference update to ensure CD tracks changes
+        this.matches = [...data];
+      },
       error: (err) => {
-        this.error = err.error?.message || 'Failed to load matches. Server unavailable.';
-        this.loading = false;
+        if (showSpinner) this.error = err.error?.message || 'Failed to load matches. Server unavailable.';
       }
     });
   }

@@ -1,0 +1,113 @@
+<div class="feed-page">
+  <!-- Header -->
+  <header class="feed-header">
+    <h1 class="feed-title">💘 Discover</h1>
+    <nav class="feed-nav">
+      <a routerLink="/profile" class="nav-link">👤 My Profile</a>
+      <a routerLink="/matches" class="nav-link">💞 Matches</a>
+    </nav>
+  </header>
+
+  <!-- Loading -->
+  @if (loading) {
+    <div class="state-center">
+      <div class="spinner"></div>
+      <p class="state-text">Finding people…</p>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (error && !loading) {
+    <div class="state-center">
+      <div class="error-icon">⚠️</div>
+      <p class="state-text">{{ error }}</p>
+    </div>
+  }
+
+  <!-- Empty -->
+  @if (!loading && !error && profiles.length === 0) {
+    <div class="state-center">
+      <div class="empty-icon">🌐</div>
+      <p class="state-text">No other profiles yet. Invite your friends!</p>
+    </div>
+  }
+
+  <!-- Profile Cards Grid -->
+  @if (!loading && profiles.length > 0) {
+    <div class="cards-grid">
+      @for (profile of profiles; track profile.id) {
+        <div class="profile-card" [class.card-liked]="likedIds.has(profile.user)" [class.card-disliked]="dislikedIds.has(profile.user)">
+
+          <!-- Match Banner -->
+          @if (matchedIds.has(profile.user)) {
+            <div class="match-banner">🎉 It's a Match!</div>
+          }
+
+          <!-- Photo -->
+          <div class="card-photo-wrap">
+            @if (profile.photo_url) {
+              <img [src]="profile.photo_url" [alt]="profile.name" class="card-photo" />
+            } @else {
+              <div class="card-photo-placeholder">
+                <span class="ph-icon">👤</span>
+                <span class="ph-label">No photo</span>
+              </div>
+            }
+
+            <!-- Gender badge -->
+            @if (profile.gender) {
+              <span class="gender-badge">
+                {{ profile.gender === 'M' ? '♂' : profile.gender === 'F' ? '♀' : '⚧' }}
+              </span>
+            }
+          </div>
+
+          <!-- Card Body -->
+          <div class="card-body">
+            <h2 class="card-name">{{ profile.name }}</h2>
+
+            <div class="card-meta">
+              @if (profile.city) {
+                <span class="meta-chip">📍 {{ profile.city }}</span>
+              }
+              @if (profile.birthdate) {
+                <span class="meta-chip">🎂 {{ profile.birthdate }}</span>
+              }
+            </div>
+
+            @if (profile.bio) {
+              <p class="card-bio">{{ profile.bio }}</p>
+            } @else {
+              <p class="card-bio no-bio">No bio yet.</p>
+            }
+
+            <!-- Action Buttons -->
+            <div class="card-actions">
+              <button
+                class="action-btn like-btn"
+                [class.active]="likedIds.has(profile.user)"
+                [disabled]="actionLoading.has(profile.user) || likedIds.has(profile.user)"
+                (click)="sendLike(profile)"
+                [attr.aria-label]="'Like ' + profile.name"
+              >
+                {{ likedIds.has(profile.user) ? '❤️' : '🤍' }}
+                <span>{{ likedIds.has(profile.user) ? 'Liked' : 'Like' }}</span>
+              </button>
+
+              <button
+                class="action-btn dislike-btn"
+                [class.active]="dislikedIds.has(profile.user)"
+                [disabled]="actionLoading.has(profile.user) || dislikedIds.has(profile.user)"
+                (click)="sendDislike(profile)"
+                [attr.aria-label]="'Dislike ' + profile.name"
+              >
+                {{ dislikedIds.has(profile.user) ? '💔' : '👎' }}
+                <span>{{ dislikedIds.has(profile.user) ? 'Passed' : 'Pass' }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

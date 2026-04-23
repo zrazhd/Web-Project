@@ -1,15 +1,21 @@
 <div class="page">
   <div class="page-hero">
-    <h1>Your Matches 💞</h1>
-    <p>People you mutually liked</p>
-    @if (!loading && matches.length > 0) {
-      <div class="badge">{{ matches.length }} match{{ matches.length > 1 ? 'es' : '' }}</div>
-    }
+    <a routerLink="/feed" class="btn-back">
+      ← Back to Explore
+    </a>
+    
+    <div class="hero-content">
+      <h1>Your Matches 💞</h1>
+      <p>People you mutually liked</p>
+      @if (!loading && matches.length > 0) {
+        <div class="badge">{{ matches.length }} Match{{ matches.length > 1 ? 'es' : '' }}</div>
+      }
+    </div>
   </div>
 
   @if (error) {
-    <div class="error-msg page-error">
-      ⚠️ {{ error }}
+    <div class="error-msg page-error slide-up">
+      <div class="error-text">⚠️ {{ error }}</div>
       <button (click)="loadMatches()" class="retry-btn">Retry</button>
     </div>
   }
@@ -17,16 +23,19 @@
   @if (loading) {
     <div class="loading-wrap">
       <div class="spinner"></div>
-      <p>Loading matches...</p>
+      <p>Finding your soulmates...</p>
     </div>
   }
 
   @if (!loading && matches.length === 0 && !error) {
-    <div class="empty-state">
-      <div class="empty-icon">💞</div>
+    <div class="empty-state slide-up">
+      <div class="empty-icon-wrap">
+        <div class="empty-icon">💞</div>
+        <div class="pulse-ring"></div>
+      </div>
       <h3>No matches yet</h3>
       <p>Start liking people — when they like you back, it's a match!</p>
-      <a routerLink="/users" class="btn-primary" style="display:inline-block;margin-top:16px;">
+      <a routerLink="/feed" class="btn-primary mt-4 glow-btn">
         Discover people
       </a>
     </div>
@@ -34,26 +43,29 @@
 
   @if (!loading && matches.length > 0) {
     <div class="matches-grid">
-      @for (match of matches; track match.id) {
-        <div class="match-card">
+      @for (match of matches; track match.id; let i = $index) {
+        <div class="match-card glass-card slide-up" [style.animation-delay]="(i * 0.1) + 's'">
           <div class="match-photos">
-            <img
-              class="photo-left"
-              [src]="match.user1.photoUrl || 'https://ui-avatars.com/api/?name=' + match.user1.name + '&background=fce7f3&color=e91e8c'"
-              [alt]="match.user1.name"
-              (error)="$any($event.target).src='https://ui-avatars.com/api/?name=' + match.user1.name + '&background=fce7f3&color=e91e8c'"
-            >
-            <div class="heart-badge">💕</div>
-            <img
-              class="photo-right"
-              [src]="match.user2.photoUrl || 'https://ui-avatars.com/api/?name=' + match.user2.name + '&background=fce7f3&color=e91e8c'"
-              [alt]="match.user2.name"
-              (error)="$any($event.target).src='https://ui-avatars.com/api/?name=' + match.user2.name + '&background=fce7f3&color=e91e8c'"
-            >
+            <div class="photo-wrapper center-wrapper">
+              <img
+                class="photo-center"
+                [src]="match.matched_user.photoUrl || 'https://ui-avatars.com/api/?name=' + match.matched_user.name + '&background=fce7f3&color=e91e8c'"
+                [alt]="match.matched_user.name"
+                (error)="$any($event.target).src='https://ui-avatars.com/api/?name=' + match.matched_user.name + '&background=fce7f3&color=e91e8c'"
+              >
+            </div>
+            <div class="heart-badge mini-heart">💕</div>
+            @if (match.unread_count && match.unread_count > 0) {
+              <div class="unread-badge">{{ match.unread_count }}</div>
+            }
           </div>
+          
           <div class="match-info">
-            <div class="match-names">{{ match.user1.name }} & {{ match.user2.name }}</div>
-            <div class="match-date">Matched {{ match.created_at | slice:0:10 }}</div>
+            <div class="match-names">
+              <span class="name-pill">{{ match.matched_user.name }}</span>
+            </div>
+            <div class="match-date">You matched on {{ match.created_at | slice:0:10 }}</div>
+            <button class="chat-btn" [routerLink]="['/chat', match.matched_user.id]">Send Message</button>
           </div>
         </div>
       }

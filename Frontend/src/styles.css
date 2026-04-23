@@ -1,3 +1,14 @@
+:root {
+  --pink-main: #e91e63;
+  --pink-deep: #c2185b;
+  --pink-light: #fce4ec;
+  --pink-border: #f8bbd0;
+  --text-dark: #212121;
+  --text-soft: #757575;
+  --radius-md: 16px;
+  --shadow-card: 0 4px 12px rgba(0,0,0,0.05);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
