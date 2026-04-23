@@ -1,8 +1,11 @@
 <div class="page">
   <div class="page-hero">
-    <a routerLink="/feed" class="btn-back">
-      ← Back to Explore
-    </a>
+    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 600px;">
+      <a routerLink="/feed" class="btn-back">
+        ← Back to Explore
+      </a>
+      <button class="btn-back" (click)="logout()" style="cursor: pointer; font-family: inherit; font-size: 14px; border: none; background: rgba(255,255,255,0.7); color: var(--text-dark); padding: 0.5rem 1rem; border-radius: 20px;">🚪 Logout</button>
+    </div>
     
     <div class="hero-content">
       <h1>Your Matches 💞</h1>

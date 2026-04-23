@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ProfileService } from '../../services/profile.service';
+import { AuthService } from '../../services/auth.service';
 import { Profile } from '../../models/profile.model';
 import { finalize } from 'rxjs/operators';
 
@@ -33,7 +34,17 @@ export class ProfileComponent implements OnInit {
   selectedFile: File | null = null;
   previewUrl: string | null = null;
 
-  constructor(private profileService: ProfileService, private router: Router, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private profileService: ProfileService, 
+    private router: Router, 
+    private cdr: ChangeDetectorRef,
+    private authService: AuthService
+  ) {}
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
 
   ngOnInit(): void {
     this.loadProfile();

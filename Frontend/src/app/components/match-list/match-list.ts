@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 import { MatchService } from '../../services/match.service';
 import type { Match } from '../../services/match.service';
 import { SlicePipe } from '@angular/common';
@@ -19,7 +20,17 @@ export class MatchListComponent implements OnInit, OnDestroy {
   error = '';
   private pollSub?: Subscription;
 
-  constructor(private matchService: MatchService, private cdr: ChangeDetectorRef) { }
+  constructor(
+    private matchService: MatchService, 
+    private cdr: ChangeDetectorRef,
+    private authService: AuthService,
+    private router: Router
+  ) { }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
 
   ngOnInit() { 
     this.loadMatches(); 

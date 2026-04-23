@@ -1,5 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 import { ProfileService } from '../../services/profile.service';
 import { LikeService } from '../../services/like.service';
 import { Profile } from '../../models/profile.model';
@@ -23,14 +24,27 @@ export class FeedComponent implements OnInit {
   dislikedIds = new Set<number>();
   matchedIds = new Set<number>();
   actionLoading = new Set<number>();
+  hasProfile = true;
 
   constructor(
     private profileService: ProfileService,
     private likeService: LikeService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private authService: AuthService,
+    private router: Router
   ) {}
 
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
+
   ngOnInit(): void {
+    this.profileService.getMyProfile().subscribe({
+      next: () => this.hasProfile = true,
+      error: () => this.hasProfile = false
+    });
+
     this.profileService.browseProfiles().pipe(
       finalize(() => {
         this.loading = false;
@@ -49,16 +63,20 @@ export class FeedComponent implements OnInit {
   sendLike(profile: Profile): void {
     if (this.actionLoading.has(profile.user)) return;
     this.actionLoading.add(profile.user);
+    
+    // Optimistic UI Update
+    this.likedIds.add(profile.user);
+    this.dislikedIds.delete(profile.user);
+
     this.likeService.sendLike(profile.user).subscribe({
       next: (res) => {
-        this.likedIds.add(profile.user);
-        this.dislikedIds.delete(profile.user);
         if (res.is_match) this.matchedIds.add(profile.user);
         this.actionLoading.delete(profile.user);
       },
       error: (err) => {
-        // 400 = already liked
-        if (err.status === 400) this.likedIds.add(profile.user);
+        if (err.status !== 400) {
+          this.likedIds.delete(profile.user); // Revert on actual error
+        }
         this.actionLoading.delete(profile.user);
       },
     });
@@ -67,14 +85,18 @@ export class FeedComponent implements OnInit {
   sendDislike(profile: Profile): void {
     if (this.actionLoading.has(profile.user)) return;
     this.actionLoading.add(profile.user);
+    
+    // Optimistic UI Update
+    this.dislikedIds.add(profile.user);
+    this.likedIds.delete(profile.user);
+    this.matchedIds.delete(profile.user);
+
     this.likeService.sendDislike(profile.user).subscribe({
       next: () => {
-        this.dislikedIds.add(profile.user);
-        this.likedIds.delete(profile.user);
-        this.matchedIds.delete(profile.user);
         this.actionLoading.delete(profile.user);
       },
       error: () => {
+        this.dislikedIds.delete(profile.user); // Revert
         this.actionLoading.delete(profile.user);
       },
     });

@@ -2,7 +2,6 @@
 
 .feed-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
   font-family: 'Inter', sans-serif;
   padding-bottom: 3rem;
 }
@@ -13,9 +12,10 @@
   align-items: center;
   justify-content: space-between;
   padding: 1.4rem 2rem;
-  background: rgba(255,255,255,.04);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(255,255,255,.08);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(0,0,0,0.05);
   position: sticky;
   top: 0;
   z-index: 20;
@@ -24,10 +24,7 @@
 .feed-title {
   font-size: 1.5rem;
   font-weight: 800;
-  background: linear-gradient(90deg, #f472b6, #a78bfa);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--text-dark);
   margin: 0;
 }
 
@@ -39,21 +36,57 @@
 .nav-link {
   padding: .45rem 1rem;
   border-radius: 20px;
-  background: rgba(255,255,255,.07);
-  border: 1px solid rgba(255,255,255,.12);
-  color: rgba(255,255,255,.75);
+  background: rgba(233,30,140, 0.08);
+  border: 1px solid transparent;
+  color: var(--pink-main);
   font-size: .85rem;
-  font-weight: 500;
+  font-weight: 600;
   text-decoration: none;
   transition: all .2s;
 }
 .nav-link:hover {
-  background: rgba(255,255,255,.14);
-  color: #fff;
+  background: rgba(233,30,140, 0.15);
   transform: translateY(-1px);
 }
 
 /* ── States ── */
+.no-profile-banner {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--pink-border);
+  border-radius: 16px;
+  margin: 1.5rem auto;
+  max-width: 600px;
+  padding: 1.2rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  box-shadow: 0 8px 24px rgba(233,30,140,0.1);
+}
+
+.banner-icon { font-size: 2rem; color: var(--pink-main); }
+.banner-content { flex: 1; }
+.banner-content h3 { margin: 0 0 0.3rem; font-size: 1rem; color: var(--text-dark); font-weight: 700; }
+.banner-content p { margin: 0; font-size: 0.85rem; color: var(--text-soft); }
+
+.banner-btn {
+  background: var(--pink-main);
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.banner-btn:hover {
+  background: var(--pink-deep);
+  transform: translateY(-2px);
+  color: white;
+}
+
 .state-center {
   display: flex;
   flex-direction: column;
@@ -61,7 +94,7 @@
   justify-content: center;
   gap: 1rem;
   padding: 5rem 1rem;
-  color: rgba(255,255,255,.5);
+  color: var(--text-soft);
 }
 
 .state-text { font-size: 1rem; }
@@ -71,8 +104,8 @@
 .spinner {
   width: 52px;
   height: 52px;
-  border: 4px solid rgba(255,255,255,.1);
-  border-top-color: #f472b6;
+  border: 4px solid var(--pink-border);
+  border-top-color: var(--pink-main);
   border-radius: 50%;
   animation: spin .75s linear infinite;
 }
@@ -90,23 +123,25 @@
 
 /* ── Card ── */
 .profile-card {
-  background: rgba(255,255,255,.06);
-  backdrop-filter: blur(18px);
-  border: 1px solid rgba(255,255,255,.1);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 24px;
   overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.04);
   transition: transform .25s, box-shadow .25s, border-color .25s;
   position: relative;
 }
 .profile-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 20px 50px rgba(0,0,0,.45);
-  border-color: rgba(244,114,182,.3);
+  box-shadow: 0 16px 40px rgba(233,30,140,0.15);
+  border-color: rgba(233,30,140,0.2);
 }
 
 .card-liked {
-  border-color: rgba(236,72,153,.4) !important;
-  background: rgba(236,72,153,.07) !important;
+  border-color: var(--pink-main) !important;
+  background: rgba(233,30,140,0.05) !important;
 }
 .card-disliked {
   opacity: .5;
@@ -119,7 +154,7 @@
   left: 0;
   right: 0;
   z-index: 10;
-  background: linear-gradient(90deg, #ec4899, #8b5cf6);
+  background: linear-gradient(135deg, var(--pink-main), #ff6b81);
   color: #fff;
   text-align: center;
   font-size: .9rem;
@@ -150,24 +185,25 @@
 .card-photo-placeholder {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, rgba(244,114,182,.08), rgba(139,92,246,.08));
+  background: rgba(0,0,0,0.02);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: .4rem;
-  border-bottom: 1px solid rgba(255,255,255,.07);
+  border-bottom: 1px solid rgba(0,0,0,.05);
 }
 
 .ph-icon { font-size: 3.5rem; opacity: .4; }
-.ph-label { font-size: .78rem; color: rgba(255,255,255,.35); }
+.ph-label { font-size: .78rem; color: var(--text-soft); }
 
 .gender-badge {
   position: absolute;
   bottom: .7rem;
   right: .7rem;
-  background: rgba(0,0,0,.55);
+  background: rgba(255,255,255,.8);
   backdrop-filter: blur(8px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   border-radius: 50%;
   width: 2rem;
   height: 2rem;
@@ -175,7 +211,7 @@
   align-items: center;
   justify-content: center;
   font-size: 1rem;
-  color: #fff;
+  color: var(--pink-main);
 }
 
 /* ── Card Body ── */
@@ -189,7 +225,7 @@
 .card-name {
   font-size: 1.15rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--text-dark);
   margin: 0;
 }
 
@@ -202,15 +238,15 @@
 .meta-chip {
   font-size: .78rem;
   padding: .25rem .65rem;
-  background: rgba(255,255,255,.07);
-  border: 1px solid rgba(255,255,255,.1);
+  background: rgba(0,0,0,.03);
+  border: 1px solid rgba(0,0,0,.05);
   border-radius: 20px;
-  color: rgba(255,255,255,.65);
+  color: var(--text-soft);
 }
 
 .card-bio {
   font-size: .88rem;
-  color: rgba(255,255,255,.6);
+  color: var(--text-soft);
   line-height: 1.6;
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -218,7 +254,7 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.no-bio { font-style: italic; color: rgba(255,255,255,.3); }
+.no-bio { font-style: italic; opacity: .6; }
 
 /* ── Action Buttons ── */
 .card-actions {
@@ -244,31 +280,30 @@
 }
 
 .like-btn {
-  background: rgba(236,72,153,.13);
-  border: 1px solid rgba(236,72,153,.25);
-  color: #f9a8d4;
+  background: rgba(233,30,140, 0.08);
+  border: 1px solid transparent;
+  color: var(--pink-main);
 }
 .like-btn:hover:not(:disabled) {
-  background: rgba(236,72,153,.25);
+  background: rgba(233,30,140, 0.15);
   transform: translateY(-2px);
 }
 .like-btn.active {
-  background: rgba(236,72,153,.25);
-  border-color: rgba(236,72,153,.5);
-  color: #f472b6;
+  background: var(--pink-main);
+  color: white;
 }
 
 .dislike-btn {
-  background: rgba(255,255,255,.06);
-  border: 1px solid rgba(255,255,255,.12);
-  color: rgba(255,255,255,.5);
+  background: rgba(0,0,0,.04);
+  border: 1px solid rgba(0,0,0,.05);
+  color: var(--text-soft);
 }
 .dislike-btn:hover:not(:disabled) {
-  background: rgba(255,255,255,.12);
+  background: rgba(0,0,0,.08);
   transform: translateY(-2px);
 }
 .dislike-btn.active {
-  color: rgba(255,255,255,.25);
+  color: var(--text-dark);
 }
 
 .action-btn:disabled { opacity: .5; cursor: not-allowed; }

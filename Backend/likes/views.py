@@ -15,6 +15,9 @@ class LikeUserView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, to_user_id):
+        if not hasattr(request.user, 'profile'):
+            return Response({'error': 'You must create a profile first to send likes.'}, status=status.HTTP_403_FORBIDDEN)
+
         to_user = get_object_or_404(User, pk=to_user_id)
 
         if to_user == request.user:
@@ -36,6 +39,9 @@ class LikeUserView(APIView):
         return Response(data, status=status.HTTP_201_CREATED)
 
     def delete(self, request, to_user_id):
+        if not hasattr(request.user, 'profile'):
+            return Response({'error': 'You must create a profile first to send passes.'}, status=status.HTTP_403_FORBIDDEN)
+
         to_user = get_object_or_404(User, pk=to_user_id)
         like = Like.objects.filter(from_user=request.user, to_user=to_user).first()
         if not like:

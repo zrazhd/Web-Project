@@ -5,6 +5,7 @@
     <nav class="feed-nav">
       <a routerLink="/profile" class="nav-link">👤 My Profile</a>
       <a routerLink="/matches" class="nav-link">💞 Matches</a>
+      <button class="nav-link" (click)="logout()" style="cursor: pointer; font-family: inherit;">🚪 Logout</button>
     </nav>
   </header>
 
@@ -21,6 +22,18 @@
     <div class="state-center">
       <div class="error-icon">⚠️</div>
       <p class="state-text">{{ error }}</p>
+    </div>
+  }
+
+  <!-- Missing Profile Banner -->
+  @if (!hasProfile && !loading) {
+    <div class="no-profile-banner">
+      <div class="banner-icon">⚠️</div>
+      <div class="banner-content">
+        <h3>Create Your Profile</h3>
+        <p>You must fill out your profile before you can like or pass on other users!</p>
+      </div>
+      <a routerLink="/profile" class="banner-btn">Create Profile</a>
     </div>
   }
 
@@ -86,7 +99,7 @@
               <button
                 class="action-btn like-btn"
                 [class.active]="likedIds.has(profile.user)"
-                [disabled]="actionLoading.has(profile.user) || likedIds.has(profile.user)"
+                [disabled]="likedIds.has(profile.user) || !hasProfile"
                 (click)="sendLike(profile)"
                 [attr.aria-label]="'Like ' + profile.name"
               >
@@ -97,7 +110,7 @@
               <button
                 class="action-btn dislike-btn"
                 [class.active]="dislikedIds.has(profile.user)"
-                [disabled]="actionLoading.has(profile.user) || dislikedIds.has(profile.user)"
+                [disabled]="dislikedIds.has(profile.user) || !hasProfile"
                 (click)="sendDislike(profile)"
                 [attr.aria-label]="'Dislike ' + profile.name"
               >

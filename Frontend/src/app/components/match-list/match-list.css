@@ -16,9 +16,6 @@
   margin-bottom: 48px; 
 }
 .btn-back {
-  position: absolute;
-  left: 0;
-  top: 0;
   background: rgba(233,30,140, 0.08);
   color: var(--pink-main);
   padding: 8px 16px;
