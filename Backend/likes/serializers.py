@@ -10,10 +10,11 @@ class UserShortSerializer(serializers.ModelSerializer):
     age = serializers.SerializerMethodField()
     city = serializers.SerializerMethodField()
     bio = serializers.SerializerMethodField()
+    additional_photos = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ['id', 'name', 'age', 'city', 'photoUrl', 'bio']
+        fields = ['id', 'name', 'age', 'city', 'photoUrl', 'bio', 'additional_photos']
 
     def get_photoUrl(self, obj) -> str | None:
         try:
@@ -26,6 +27,16 @@ class UserShortSerializer(serializers.ModelSerializer):
         except Exception:
             pass
         return getattr(obj, 'photoUrl', None) or ""
+
+    def get_additional_photos(self, obj) -> list:
+        try:
+            profile = getattr(obj, 'profile', None)
+            if profile:
+                from profiles.serializers import ProfilePhotoSerializer
+                return ProfilePhotoSerializer(profile.additional_photos.all(), many=True, context=self.context).data
+        except Exception:
+            pass
+        return []
 
     def get_age(self, obj) -> int | None:
         try:

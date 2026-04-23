@@ -326,3 +326,92 @@
   .info-grid { grid-template-columns: 1fr 1fr; }
   .profile-card { padding: 1.5rem; }
 }
+
+/* ── Additional Photos ── */
+.photos-section {
+  margin-top: 1rem;
+  border-top: 1px solid rgba(0,0,0,.08);
+  padding-top: 1rem;
+}
+.photos-section h3 {
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--text-soft);
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  margin-bottom: .8rem;
+}
+.photos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 1rem;
+}
+.photo-item {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.photo-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.photo-actions {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: .5rem;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.photo-item:hover .photo-actions {
+  opacity: 1;
+}
+.btn-set-main, .btn-delete-photo {
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1rem;
+}
+.btn-set-main {
+  background: rgba(255,255,255,0.9);
+  color: #f59e0b;
+}
+.btn-delete-photo {
+  background: rgba(239,68,68,0.9);
+  color: #fff;
+}
+.add-photo-box {
+  border: 2px dashed rgba(0,0,0,0.15);
+  background: rgba(0,0,0,0.02);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: none;
+}
+.add-photo-box label {
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+.plus-icon {
+  font-size: 2rem;
+  color: var(--text-soft);
+}

@@ -56,10 +56,25 @@
             <div class="match-banner">🎉 It's a Match!</div>
           }
 
-          <!-- Photo -->
+          <!-- Photo Carousel -->
           <div class="card-photo-wrap">
-            @if (profile.photo_url) {
-              <img [src]="profile.photo_url" [alt]="profile.name" class="card-photo" />
+            @if (getAllPhotos(profile).length > 0) {
+              <div class="carousel">
+                <img [src]="getCurrentPhoto(profile)" [alt]="profile.name" class="card-photo" />
+                
+                @if (getAllPhotos(profile).length > 1) {
+                  <!-- Left/Right tap zones -->
+                  <div class="tap-zone left-zone" (click)="prevPhoto(profile, $event)"></div>
+                  <div class="tap-zone right-zone" (click)="nextPhoto(profile, $event)"></div>
+                  
+                  <!-- Indicators -->
+                  <div class="carousel-indicators">
+                    @for (photo of getAllPhotos(profile); track photo; let i = $index) {
+                      <div class="indicator-dot" [class.active]="i === (activePhotoIndex.get(profile.user) || 0)"></div>
+                    }
+                  </div>
+                }
+              </div>
             } @else {
               <div class="card-photo-placeholder">
                 <span class="ph-icon">👤</span>

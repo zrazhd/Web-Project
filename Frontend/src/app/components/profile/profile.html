@@ -65,6 +65,35 @@
           </div>
         }
 
+        <div class="photos-section">
+          <h3>Additional Photos ({{ profile.additional_photos?.length || 0 }}/5)</h3>
+          <div class="photos-grid">
+            @for(photo of profile.additional_photos; track photo.id) {
+              <div class="photo-item">
+                <img [src]="photo.url" alt="Extra photo" />
+                <div class="photo-actions">
+                  <button class="btn-set-main" (click)="setMainPhoto(photo.id)" title="Set as Main">★</button>
+                  <button class="btn-delete-photo" (click)="deleteExtraPhoto(photo.id)" title="Delete">✕</button>
+                </div>
+              </div>
+            }
+            @if((profile.additional_photos?.length || 0) < 5) {
+              <div class="photo-item add-photo-box">
+                <label for="extra-photo-input">
+                  <span class="plus-icon">+</span>
+                  <input
+                    id="extra-photo-input"
+                    type="file"
+                    accept="image/*"
+                    (change)="uploadExtraPhoto($event)"
+                    class="hidden-input"
+                  />
+                </label>
+              </div>
+            }
+          </div>
+        </div>
+
         @if (successMsg) {
           <div class="alert alert-success">{{ successMsg }}</div>
         }

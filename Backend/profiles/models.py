@@ -39,3 +39,21 @@ class Profile(models.Model):
 
     def __str__(self):
         return f"Profile of {self.user.email}"
+
+class ProfilePhoto(models.Model):
+    """
+    Additional photos uploaded by the user. Max 5 photos.
+    """
+    profile = models.ForeignKey(
+        Profile,
+        on_delete=models.CASCADE,
+        related_name='additional_photos'
+    )
+    image = models.ImageField(upload_to='photos/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['uploaded_at']
+
+    def __str__(self):
+        return f"Photo for {self.profile.user.email} (ID: {self.id})"

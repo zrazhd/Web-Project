@@ -25,6 +25,7 @@ export class FeedComponent implements OnInit {
   matchedIds = new Set<number>();
   actionLoading = new Set<number>();
   hasProfile = true;
+  activePhotoIndex = new Map<number, number>();
 
   constructor(
     private profileService: ProfileService,
@@ -100,5 +101,41 @@ export class FeedComponent implements OnInit {
         this.actionLoading.delete(profile.user);
       },
     });
+  }
+
+  getAllPhotos(profile: Profile): string[] {
+    const photos: string[] = [];
+    if (profile.photo_url) photos.push(profile.photo_url);
+    if (profile.additional_photos) {
+      photos.push(...profile.additional_photos.map(p => p.url));
+    }
+    return photos;
+  }
+
+  getCurrentPhoto(profile: Profile): string | null {
+    const photos = this.getAllPhotos(profile);
+    if (!photos.length) return null;
+    const idx = this.activePhotoIndex.get(profile.user) || 0;
+    return photos[idx < photos.length ? idx : 0];
+  }
+
+  nextPhoto(profile: Profile, event: Event): void {
+    event.stopPropagation();
+    const photos = this.getAllPhotos(profile);
+    if (photos.length <= 1) return;
+    const current = this.activePhotoIndex.get(profile.user) || 0;
+    if (current < photos.length - 1) {
+      this.activePhotoIndex.set(profile.user, current + 1);
+    }
+  }
+
+  prevPhoto(profile: Profile, event: Event): void {
+    event.stopPropagation();
+    const photos = this.getAllPhotos(profile);
+    if (photos.length <= 1) return;
+    const current = this.activePhotoIndex.get(profile.user) || 0;
+    if (current > 0) {
+      this.activePhotoIndex.set(profile.user, current - 1);
+    }
   }
 }

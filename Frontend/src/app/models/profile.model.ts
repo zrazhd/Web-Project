@@ -11,4 +11,11 @@ export interface Profile {
   birthdate: string | null;
   created_at: string;
   updated_at: string;
+  additional_photos?: ProfilePhoto[];
+}
+
+export interface ProfilePhoto {
+  id: number;
+  url: string;
+  uploaded_at: string;
 }

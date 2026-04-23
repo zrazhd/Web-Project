@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, throwError } from 'rxjs';
-import { Profile } from '../models/profile.model';
+import { Profile, ProfilePhoto } from '../models/profile.model';
 
 @Injectable({ providedIn: 'root' })
 export class ProfileService {
@@ -40,6 +40,29 @@ export class ProfileService {
   /** GET /api/profiles/browse/ — list of other users' profiles */
   browseProfiles(): Observable<Profile[]> {
     return this.http.get<Profile[]>(`${this.apiUrl}/profiles/browse/`).pipe(
+      catchError(err => throwError(() => err))
+    );
+  }
+
+  /** POST /api/profile/photos/ — upload an additional photo */
+  uploadAdditionalPhoto(file: File): Observable<ProfilePhoto> {
+    const formData = new FormData();
+    formData.append('image', file);
+    return this.http.post<ProfilePhoto>(`${this.apiUrl}/profile/photos/`, formData).pipe(
+      catchError(err => throwError(() => err))
+    );
+  }
+
+  /** DELETE /api/profile/photos/<id>/ — delete an additional photo */
+  deleteAdditionalPhoto(photoId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/profile/photos/${photoId}/`).pipe(
+      catchError(err => throwError(() => err))
+    );
+  }
+
+  /** POST /api/profile/photos/<id>/set_main/ — swap with main photo */
+  setMainPhoto(photoId: number): Observable<{message: string, photo_url: string | null}> {
+    return this.http.post<{message: string, photo_url: string | null}>(`${this.apiUrl}/profile/photos/${photoId}/set_main/`, {}).pipe(
       catchError(err => throwError(() => err))
     );
   }

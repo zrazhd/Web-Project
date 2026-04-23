@@ -163,4 +163,53 @@ export class ProfileComponent implements OnInit {
       },
     });
   }
+
+  // --- Additional Photos Management ---
+
+  uploadExtraPhoto(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      this.profileService.uploadAdditionalPhoto(file).subscribe({
+        next: (photo) => {
+          if (this.profile) {
+            this.profile.additional_photos = this.profile.additional_photos || [];
+            this.profile.additional_photos.push(photo);
+          }
+        },
+        error: (err) => {
+          this.error = err.error?.error || 'Failed to upload photo';
+        }
+      });
+    }
+    input.value = ''; // Reset input
+  }
+
+  deleteExtraPhoto(photoId: number): void {
+    if (!confirm('Delete this photo?')) return;
+    this.profileService.deleteAdditionalPhoto(photoId).subscribe({
+      next: () => {
+        if (this.profile && this.profile.additional_photos) {
+          this.profile.additional_photos = this.profile.additional_photos.filter(p => p.id !== photoId);
+        }
+      },
+      error: () => {
+        this.error = 'Failed to delete photo';
+      }
+    });
+  }
+
+  setMainPhoto(photoId: number): void {
+    this.profileService.setMainPhoto(photoId).subscribe({
+      next: (res) => {
+        if (this.profile) {
+          // Re-load the profile entirely to get the newly updated avatar and new list of additional photos
+          this.loadProfile();
+        }
+      },
+      error: (err) => {
+        this.error = 'Failed to set main photo';
+      }
+    });
+  }
 }

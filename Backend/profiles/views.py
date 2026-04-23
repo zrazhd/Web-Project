@@ -5,8 +5,8 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 
-from .models import Profile
-from .serializers import ProfileSerializer, ProfileUpdateSerializer
+from .models import Profile, ProfilePhoto
+from .serializers import ProfileSerializer, ProfileUpdateSerializer, ProfilePhotoSerializer
 
 
 class ProfileView(APIView):
@@ -88,6 +88,78 @@ def browse_profiles(request):
     FBV: GET /api/profiles/browse/
     Returns profiles of all users EXCEPT the current user.
     """
-    profiles = Profile.objects.select_related('user').exclude(user=request.user)
+    profiles = Profile.objects.select_related('user').prefetch_related('additional_photos').exclude(user=request.user)
     serializer = ProfileSerializer(profiles, many=True, context={'request': request})
     return Response(serializer.data)
+
+class ProfilePhotoView(APIView):
+    """
+    Handle additional profile photos.
+    POST /api/profile/photos/ - Upload new photo
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            profile = request.user.profile
+        except Profile.DoesNotExist:
+            return Response({'error': 'Profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        if profile.additional_photos.count() >= 5:
+            return Response({'error': 'Maximum of 5 additional photos allowed.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        image = request.FILES.get('image')
+        if not image:
+            return Response({'error': 'No image provided.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        photo = ProfilePhoto.objects.create(profile=profile, image=image)
+        serializer = ProfilePhotoSerializer(photo, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class ProfilePhotoDetailView(APIView):
+    """
+    Handle specific additional profile photo operations.
+    DELETE /api/profile/photos/<pk>/ - Delete photo
+    POST /api/profile/photos/<pk>/set_main/ - Swap with main Profile.photo
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get_photo(self, user, pk):
+        try:
+            profile = user.profile
+            return get_object_or_404(ProfilePhoto, pk=pk, profile=profile)
+        except Profile.DoesNotExist:
+            return None
+
+    def delete(self, request, pk):
+        photo = self.get_photo(request.user, pk)
+        if not photo:
+            return Response({'error': 'Photo not found.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        photo.image.delete(save=False)
+        photo.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def set_main_photo(request, pk):
+    try:
+        profile = request.user.profile
+        photo = get_object_or_404(ProfilePhoto, pk=pk, profile=profile)
+    except Profile.DoesNotExist:
+        return Response({'error': 'Profile not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+    # Swap images
+    temp_image = profile.photo
+    profile.photo = photo.image
+    photo.image = temp_image
+    
+    profile.save()
+    if photo.image:
+        photo.save()
+    else:
+        # If the main avatar was empty, the additional photo loses its image and we should just delete it
+        photo.delete()
+
+    return Response({'message': 'Main photo updated', 'photo_url': request.build_absolute_uri(profile.photo.url) if profile.photo else None})

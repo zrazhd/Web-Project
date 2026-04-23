@@ -1,5 +1,18 @@
 from rest_framework import serializers
-from .models import Profile
+from .models import Profile, ProfilePhoto
+
+class ProfilePhotoSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ProfilePhoto
+        fields = ['id', 'url', 'uploaded_at']
+
+    def get_url(self, obj) -> str:
+        request = self.context.get('request')
+        if request and obj.image:
+            return request.build_absolute_uri(obj.image.url)
+        return obj.image.url if obj.image else ""
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -11,6 +24,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(source='user.email', read_only=True)
     photo_url = serializers.SerializerMethodField()
     gender_display = serializers.CharField(source='get_gender_display', read_only=True)
+    additional_photos = ProfilePhotoSerializer(many=True, read_only=True)
 
     class Meta:
         model = Profile
@@ -18,6 +32,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             'id', 'user', 'name', 'email',
             'photo_url', 'bio', 'city',
             'gender', 'gender_display', 'birthdate',
+            'additional_photos',
             'created_at', 'updated_at',
         ]
         read_only_fields = ['id', 'user', 'created_at', 'updated_at']
