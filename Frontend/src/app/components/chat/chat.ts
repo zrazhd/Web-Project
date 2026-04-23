@@ -56,9 +56,12 @@ export class ChatComponent implements OnInit, OnDestroy {
       })
     ).subscribe({
       next: (data) => {
-        // Force new array reference to ensure Change Detection treats it as updated data
-        const isNew = this.messages.length !== data.length;
-        this.messages = [...data];
+        // preserve pending messages
+        const pending = this.messages.filter(m => m.isPending);
+        // Force new array reference to ensure Change Detection
+        const newArr = [...data, ...pending];
+        const isNew = this.messages.length !== newArr.length;
+        this.messages = newArr;
         if (isNew) {
           setTimeout(() => this.scrollToBottom(), 100);
         }
@@ -82,6 +85,20 @@ export class ChatComponent implements OnInit, OnDestroy {
     const text = this.newMessage;
     this.newMessage = ''; // Optimistic clear
 
+    // Optimistically add message to UI
+    const tempMsg: ChatMessage = {
+      id: Date.now(),
+      sender: -1, // guaranteed to be "mine" since it's != chatUserId
+      receiver: this.chatUserId,
+      content: text,
+      timestamp: new Date().toISOString(),
+      is_read: false,
+      isPending: true
+    };
+
+    this.messages = [...this.messages, tempMsg];
+    setTimeout(() => this.scrollToBottom(), 50);
+
     this.chatService.sendMessage(this.chatUserId, text).pipe(
       finalize(() => {
         this.sending = false;
@@ -89,13 +106,16 @@ export class ChatComponent implements OnInit, OnDestroy {
       })
     ).subscribe({
       next: (msg) => {
-        // Update immutably to guarantee UI refresh
-        this.messages = [...this.messages, msg];
-        setTimeout(() => this.scrollToBottom(), 50);
+        // Replace temp message with server confirmed message
+        this.messages = this.messages.map(m => m.id === tempMsg.id ? msg : m);
+        this.cdr.detectChanges();
       },
       error: () => {
         this.error = "Failed to send message.";
         this.newMessage = text; // Restore text
+        // Remove temp message
+        this.messages = this.messages.filter(m => m.id !== tempMsg.id);
+        this.cdr.detectChanges();
       }
     });
   }

@@ -10,6 +10,7 @@ export interface ChatMessage {
   content: string;
   timestamp: string;
   is_read: boolean;
+  isPending?: boolean;
 }
 
 @Injectable({ providedIn: 'root' })

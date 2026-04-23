@@ -29,7 +29,7 @@
 
     <div class="messages-list">
       @for (msg of messages; track msg.id) {
-        <div class="message-wrapper" [ngClass]="{'mine': isMine(msg), 'theirs': !isMine(msg)}">
+        <div class="message-wrapper" [ngClass]="{'mine': isMine(msg), 'theirs': !isMine(msg), 'pending': msg.isPending}">
           <div class="message-bubble">
             <span class="message-text">{{ msg.content }}</span>
             <span class="message-time">{{ msg.timestamp | date:'shortTime' }}</span>
@@ -48,7 +48,6 @@
         placeholder="iMessage..." 
         autocomplete="off"
         class="chat-input"
-        [disabled]="sending"
       />
       <button type="submit" class="send-btn" [disabled]="!newMessage.trim() || sending">
         Send
